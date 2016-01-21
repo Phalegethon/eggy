@@ -129,7 +129,7 @@ egg.prototype.askForAppLicense = function askForAppLicense() {
     }.bind(this));
 };
 
-egg.prototype.createFolders = function createFolders(){
+egg.prototype.app = function app(){
     mkdirp(this.appDir);
     var modulesDir = this.appDir + '/modules';
     var assetsDir = this.appDir + '/assets';
