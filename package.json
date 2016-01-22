@@ -37,6 +37,7 @@
     "underscore.string": "^3.2.3"
   },
   "files": [
-    "app"
+    "app",
+    "utils.js"
   ]
 }
