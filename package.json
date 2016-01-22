@@ -1,5 +1,5 @@
 {
-  "name": "generator-eggy",
+  "name": "generator-local-eggy",
   "version": "0.1.8",
   "description": "Yeoman generator",
   "_args": [
