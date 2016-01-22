@@ -59,86 +59,112 @@ egg.prototype.welcome = function welcome() {
     console.log(yosay());
 };
 
-egg.prototype.askForAppName = function askForAppName() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggName',
-        message: 'What is your project name?',
-        default: 'egg'
-    }], function (props) {
-        this.eggName = props.eggName;
-        cb();
-    }.bind(this));
-};
 
-egg.prototype.askForAppVersion = function askForAppVersion() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggVersion',
-        message: 'What is your project version?',
-        default: '1.0.0'
-    }], function (props) {
-        this.eggVersion = props.eggVersion;
-        cb();
-    }.bind(this));
-};
 
-egg.prototype.askForAppDesc = function askForAppDesc() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggDesc',
-        message: 'What is your project description?',
-        default: 'this awesome project made by project EGG'
-    }], function (props) {
-        this.eggDesc = props.eggDesc;
-        cb();
-    }.bind(this));
-};
-
-egg.prototype.askForAppRepo = function askForAppRepo() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggRepo',
+function askForEverything (){
+    var promts = [
+        {
+            name: 'eggName',
+            message: 'What is your project name?',
+            default: 'egg'
+        },
+        {
+            name: 'eggVersion',
+            message: 'What is your project version?',
+            default: '0.0.1'
+        },
+        {
+            name: 'eggDesc',
+            message: 'What is your project description?',
+            default: 'this awesome project made by project EGG'
+        },
+        {
+            name: 'eggRepo',
         message: 'Add your project git repository'
-    }], function (props) {
-        this.eggRepo = props.eggRepo;
-        cb();
-    }.bind(this));
-};
-
-egg.prototype.askForAppAuthor = function askForAppAuthor() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggAuthor',
+        },
+        {
+            name: 'eggAuthor',
         message: 'App Authors name'
-    }], function (props) {
-        this.eggAuthor = props.eggAuthor;
-        cb();
-    }.bind(this));
-};
-
-egg.prototype.askForAppLicense = function askForAppLicense() {
-    var cb = this.async();
-    this.prompt([{
-        name: 'eggLicense',
+        },
+        {
+            name: 'eggLicense',
         message: 'App license?',
         default: 'MIT'
-    }], function (props) {
-        this.eggLicense = props.eggLicense;
-        cb();
-    }.bind(this));
+        },
+        {
+            type: 'checkbox',
+            name: 'modules',
+            message: 'Which modules would you like to include?',
+            choices: [
+            {
+              value: 'animateModule',
+              name: 'angular-animate.js',
+              checked: true
+            }, {
+              value: 'ariaModule',
+              name: 'angular-aria.js',
+              checked: false
+            }, {
+              value: 'cookiesModule',
+              name: 'angular-cookies.js',
+              checked: true
+            }, {
+              value: 'resourceModule',
+              name: 'angular-resource.js',
+              checked: true
+            }, {
+              value: 'messagesModule',
+              name: 'angular-messages.js',
+              checked: false
+            }, {
+              value: 'routeModule',
+              name: 'angular-route.js',
+              checked: true
+            }, {
+              value: 'sanitizeModule',
+              name: 'angular-sanitize.js',
+              checked: true
+            }, {
+              value: 'touchModule',
+              name: 'angular-touch.js',
+              checked: true
+            }
+    ]
+  }
+    ];
+
+    return promts;
+};
+
+
+egg.prototype._setAllAnswers = function _setAllAnswers(answers, callback){
+    this.eggName = answers.eggName;
+    this.eggDesc = answers.eggDesc;
+    this.eggVersion = answers.eggVersion;
+    this.eggLicense = answers.eggLicense;
+    this.eggAuthor = answers.eggAuthor;
+    this.eggRepo = answers.eggRepo;
+    callback();
 };
 
 egg.prototype.app = function app(){
+    var done = this.async();
+    this.prompt(askForEverything(), function(answers){
+        this._setAllAnswers(answers, done);
+    }
+        .bind(this))
+        .on('end', function(){
+            this._installFiles();
+        }
+    );
+};
+
+egg.prototype._installFiles = function _installFiles() {
     mkdirp(this.appDir);
     var modulesDir = this.appDir + '/modules';
     var assetsDir = this.appDir + '/assets';
     mkdirp(modulesDir);
     mkdirp(assetsDir);
-};
-
-egg.prototype.installFiles = function installFiles() {
-
     this.template(this.rootSourceDir + '/_package.json', this.appDir + '/package.json');
     this.template(this.rootSourceDir + '/_.bowerrc', this.appDir + '/.bowerrc');
     this.template(this.rootSourceDir + '/_bower.json', this.appDir + '/bower.json');
