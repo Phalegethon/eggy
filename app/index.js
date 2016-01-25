@@ -43,7 +43,7 @@ var egg = module.exports = function projectEgg(args, options) {
     this.appDir = this.env.options.appPath;
 
     this.on('end', function () {
-        var message = chalk.yellow('Cracked ') + this.eggName + chalk.yellow.bold(' project EGG');
+        var message = chalk.yellow('Your ') + this.eggName + chalk.yellow.bold(' is ready...            Have Fun!');
         console.log(yosay(message, {maxLength: 17}));
 
     });
@@ -51,12 +51,14 @@ var egg = module.exports = function projectEgg(args, options) {
     this.pkg = require('../package.json');
     this.rootSourceDir = this.sourceRoot(path.join(__dirname, '/templates/root'));
     this.appSourceDir = this.sourceRoot(path.join(__dirname, '/templates/app'));
+    this.rootProjectDir = path.dirname(this.appDir);
+
 };
 
 util.inherits(egg, yeoman.Base);
 
-egg.prototype.welcome = function welcome() {
-    console.log(yosay());
+egg.prototype._welcomeMessage = function _welcomeMessage() {
+    console.log(yosay('Welcome to EGGy moduler scaffolding assistant!', {maxLength: 19}));
 };
 
 
@@ -148,6 +150,8 @@ egg.prototype._setAllAnswers = function _setAllAnswers(answers, callback){
 };
 
 egg.prototype.app = function app(){
+    this._welcomeMessage();
+
     var done = this.async();
     this.prompt(askForEverything(), function(answers){
         this._setAllAnswers(answers, done);
@@ -155,21 +159,31 @@ egg.prototype.app = function app(){
         .bind(this))
         .on('end', function(){
             this._installFiles();
+
         }
     );
 };
 
 egg.prototype._installFiles = function _installFiles() {
+
     mkdirp(this.appDir);
     var modulesDir = this.appDir + '/modules';
     var assetsDir = this.appDir + '/assets';
+
     mkdirp(modulesDir);
     mkdirp(assetsDir);
-    this.template(this.rootSourceDir + '/_package.json', this.appDir + '/package.json');
-    this.template(this.rootSourceDir + '/_.bowerrc', this.appDir + '/.bowerrc');
-    this.template(this.rootSourceDir + '/_bower.json', this.appDir + '/bower.json');
-    this.template(this.rootSourceDir + '/_.yo-rc.json', this.appDir + '/.yo-rc.json');
-    this.template(this.rootSourceDir + '/_.gitignore', this.appDir + '/.gitignore');
-    this.template(this.rootSourceDir + '/_.editorconfig', this.appDir + '/.editorconfig');
+
+    this.template(this.rootSourceDir + '/_package.json', this.rootProjectDir + '/package.json');
+    this.template(this.rootSourceDir + '/_.bowerrc', this.rootProjectDir + '/.bowerrc');
+    this.template(this.rootSourceDir + '/_bower.json',this.rootProjectDir + '/bower.json');
+    this.template(this.rootSourceDir + '/_.yo-rc.json', this.rootProjectDir + '/.yo-rc.json');
+    this.template(this.rootSourceDir + '/_.gitignore', this.rootProjectDir + '/.gitignore');
+    this.template(this.rootSourceDir + '/_.editorconfig', this.rootProjectDir + '/.editorconfig');
+
+    this.template(this.appSourceDir, this.appDir);
+
+
+
+
 };
 
